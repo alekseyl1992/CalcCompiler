@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Compiler.h"
 #include "VM.h"
+#include "ParserException.h"
 
 int main(int argc, char *argv[])
 {
@@ -21,7 +22,7 @@ int main(int argc, char *argv[])
 
         VM vm;
         vm.execute(program);
-    } catch (std::string &e) {
-        std::cerr << e << std::endl;
+    } catch (ParserException &e) {
+        std::cerr << e.what() << std::endl;
     }
 }

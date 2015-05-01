@@ -27,4 +27,5 @@ HEADERS += \
     VM.h \
     Program.h \
     Token.h \
-    Node.h
+    Node.h \
+    ParserException.h

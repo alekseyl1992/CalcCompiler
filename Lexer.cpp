@@ -1,5 +1,6 @@
 #include "Lexer.h"
 #include <algorithm>
+#include <iostream>
 
 Lexer::Lexer(std::stringstream &str)
     : str(str) {
@@ -18,6 +19,7 @@ Token Lexer::getNextToken() {
 
     if (it != domains.end()) {
         str.unget();
+        std::cout << "Token: {" << it->type << ", " << value << "}" << std::endl;
         return {it->type, value};
     } else
         throw("Unknown token: " + value);
