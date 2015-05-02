@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
             30: a3 = a2 + 0.1
             40: a4 = 1 || 0
             50: a5 = 1 && 0
+            60: a6 = -1A
+            70: a7 = -a6
             end
             )";
 
@@ -39,5 +41,7 @@ int main(int argc, char *argv[])
 
     } catch (ParserException &e) {
         std::cerr << e.what() << std::endl;
+    } catch (std::string &e) {
+        std::cerr << e << std::endl;
     }
 }

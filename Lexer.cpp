@@ -14,7 +14,7 @@ Token Lexer::getNextToken() {
 
 
     auto it = std::find_if(domains.begin(), domains.end(), [&] (auto &domain) {
-        return domain.match(value);
+        return domain.match(value, true);
     });
 
     if (it != domains.end()) {

@@ -50,6 +50,7 @@ struct ExpNode : public Node {
     ExpNode *parent;
     int priority;
     double value = 0;
+    bool isNegative = false;
 };
 
 #endif // NODE_H

@@ -52,7 +52,7 @@ void ftoa(float n, char *res, int afterpoint, int base)
     float fpart = n - (float)ipart;
 
     // convert integer part to string
-    int i = intToStr(ipart, res, 0, base);
+    int i = intToStr(ipart, res, 1, base);
 
     // check for display option after point
     if (afterpoint != 0)
@@ -73,10 +73,17 @@ std::string to_hex_str(float value) {
     constexpr int PRECISION = 4;
     constexpr int BASE = 16;
 
+    bool negative = value < 0;
+    if (negative)
+        value = -value;
+
     char res[MAX_LENGTH] = {0};
     ftoa(value, res, PRECISION, BASE);
 
-    return std::string(res);
+    if (!negative)
+        return std::string(res);
+    else
+        return std::string("-") + res;
 }
 
 #endif // UTIL

@@ -33,6 +33,8 @@ Token Parser::skipEmptyLines()
 Node *Parser::begin()
 {
     Token token = skipEmptyLines();
+    if (token.type != Token::Type::BEGIN)
+        throw ParserException(token, {Token::BEGIN});
 
     return new Node{token};
 }
@@ -194,11 +196,10 @@ Node *Parser::expression() {
             node->parent = tree;
             tree = node;
 
-            //TODO
-//                if (isNegative) {
-//                    tree.str += '-';
-//                    isNegative = false;
-//                }
+            if (isNegative) {
+                tree->isNegative = true;
+                isNegative = false;
+            }
 
             tree->token = token;
             tree->type = Node::Type::OPERAND;
@@ -237,7 +238,11 @@ int Parser::getPriority(Token::Type operation) {
 
 Node *Parser::end()
 {
-    Token token = getNextToken();
+    stepBack = true;
+    Token token = skipEmptyLines();
+    if (token.type != Token::Type::END)
+        throw ParserException(token, {Token::END});
+
     return new Node{token};
 }
 

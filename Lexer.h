@@ -33,9 +33,11 @@ private:
                 exact = value;
         }
 
-        bool match(std::string str) {
+        bool match(std::string str, bool full=false) {
             if (isRegex)
                 return std::regex_match(str, regex);
+            else if (full)
+                return exact == str;
             else
                 return exact.find(str) == 0;
         }
@@ -54,7 +56,7 @@ private:
         Domain(Token::PLUS,          "+"),
         Domain(Token::MINUS,         "-"),
         Domain(Token::MULTIPLY,      "*"),
-        Domain(Token::DIVIDE,        ""),
+        Domain(Token::DIVIDE,        "/"),
         Domain(Token::AND,           "&"),
         Domain(Token::OR,            "|"),
         Domain(Token::LBRACE,        "("),
