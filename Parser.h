@@ -28,6 +28,7 @@ public:
 
 private:
     Token getNextToken();
+    int getPriority(Token::Type operation);
 
     Token prevToken;
     bool stepBack = false;

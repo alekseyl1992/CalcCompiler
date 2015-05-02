@@ -7,7 +7,7 @@ struct Token {
                 ARRAY, STRING,
                 NUMBER, VARIABLE,
                 ASSIGN, LABEL,
-                PLUS, MINUS, MULTIPLY, DIVIDE,
+		PLUS, MINUS, MULTIPLY, DIVIDE, POWER,
                 AND, OR,
                 LBRACE, RBRACE, TOKEN_TYPES_COUNT };
 
@@ -21,7 +21,7 @@ struct Token {
                 "ARRAY", "STRING",
                 "NUMBER", "VARIABLE",
                 "ASSIGN", "LABEL",
-                "PLUS", "MINUS", "MULTIPLY", "DIVIDE",
+		"PLUS", "MINUS", "MULTIPLY", "DIVIDE", "POWER"
                 "AND", "OR",
                 "LBRACE", "RBRACE"
         };

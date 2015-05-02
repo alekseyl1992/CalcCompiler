@@ -28,4 +28,5 @@ HEADERS += \
     Program.h \
     Token.h \
     Node.h \
-    ParserException.h
+    ParserException.h \
+    util.h

@@ -17,6 +17,7 @@ Program Parser::parse() {
         declarations(),
         operations(),
         end(),
+        varList
     };
 }
 
@@ -122,12 +123,116 @@ Node *Parser::variable() {
         throw ParserException(variableToken, {Token::VARIABLE});
     }
 
+    Token assignToken = getNextToken();
+    if (assignToken.type != Token::Type::ASSIGN)
+        throw ParserException(assignToken, {Token::ASSIGN});
+
     return new Node{variableToken, {expression()}};
 }
 
 Node *Parser::expression() {
-    //TODO: build actual expr tree
-    return nullptr;
+    int priorityModifier = 0;
+    bool isNegative = false; //for unary -
+    bool lastTokenWasOperation = true;
+
+    ExpNode *tree = new ExpNode(); //root node
+    tree->parent = nullptr;
+
+    while (!stepBack) {
+        Token token = getNextToken();
+
+        switch (token.type) {
+            case Token::LBRACE:
+                priorityModifier += 10;
+                break;
+            case Token::RBRACE:
+                priorityModifier -= 10;
+                break;
+            case Token::PLUS:
+            case Token::MINUS:
+            case Token::MULTIPLY:
+            case Token::DIVIDE:
+            case Token::POWER:
+            case Token::AND:
+            case Token::OR: {
+                if (lastTokenWasOperation) { //it's unary -
+                    isNegative = true;
+                    break;
+                }
+                lastTokenWasOperation = true;
+
+                ExpNode *node = new ExpNode();
+
+                while (tree->parent != nullptr
+                       && getPriority(token.type) + priorityModifier < tree->parent->priority) {
+                    tree = tree->parent;
+                }
+
+                node->left(tree);
+                if (tree->parent != nullptr)
+                    tree->parent->right(node);
+
+                node->parent = tree->parent;
+                tree->parent = node;
+
+                tree = node;
+
+                tree->token = token;
+                tree->priority = getPriority(token.type) + priorityModifier;
+                tree->type = Node::Type::OPERATION;
+                break;
+            }
+        case Token::VARIABLE:
+        case Token::NUMBER: {
+            lastTokenWasOperation = false;
+
+            ExpNode *node = new ExpNode();
+
+            if (tree != nullptr)
+                tree->right(node);
+
+            node->parent = tree;
+            tree = node;
+
+            //TODO
+//                if (isNegative) {
+//                    tree.str += '-';
+//                    isNegative = false;
+//                }
+
+            tree->token = token;
+            tree->type = Node::Type::OPERAND;
+            break;
+        }
+        default:
+            stepBack = true;
+            break;
+        }
+    }
+
+    while (tree->parent != nullptr)
+        tree = tree->parent;
+
+    return tree->right();
+}
+
+int Parser::getPriority(Token::Type operation) {
+    switch (operation) {
+        case Token::PLUS:
+        case Token::MINUS:
+            return 0;
+        case Token::MULTIPLY:
+        case Token::DIVIDE:
+            return 1;
+        case Token::POWER:
+            return 2;
+        case Token::OR:
+            return 3;
+        case Token::AND:
+            return 4;
+        default:
+            return -1;
+    }
 }
 
 Node *Parser::end()
