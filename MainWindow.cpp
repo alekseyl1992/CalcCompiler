@@ -25,13 +25,14 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::onCompileClick() {
-    std::stringstream code;
-    code << ui->codeEdit->document()->toPlainText().toStdString();
+    std::stringstream codeStream;
+    std::string code = ui->codeEdit->document()->toPlainText().toUtf8().toStdString();
+    codeStream << code;
 
     try {
         ui->statusbar->showMessage("Компиляция...");
         Compiler compiler;
-        Program program = compiler.compile(code);
+        Program program = compiler.compile(codeStream);
         ui->statusbar->showMessage("Компиляция завершена");
 
 

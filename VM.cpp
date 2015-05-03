@@ -61,6 +61,8 @@ double VM::evaluate(ExpNode *node) {
         if (var != vars.end()) {
             if (node->isNegative) {
                 node->value = -var->second;
+            } else {
+                node->value = var->second;
             }
 
             return node->value;

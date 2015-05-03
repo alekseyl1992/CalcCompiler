@@ -10,12 +10,12 @@ public:
         : got(got), expected(expected)
     {
         std::stringstream ss;
-        ss << "Got "
+        ss << "Получен токен "
             << got.getTypeString()
             << ": "
             << got.value
             << ", "
-            << "expected: {";
+            << "ожидались: {";
 
         for (auto exp: expected)
             ss << Token::getTypeString(exp) << ", ";

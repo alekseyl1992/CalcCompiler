@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <regex>
+#include <QString>
 #include "Token.h"
 
 class Lexer
@@ -44,10 +45,10 @@ private:
     };
 
     std::vector<Domain> domains = {
-        Domain(Token::BEGIN,         "begin"),
-        Domain(Token::END,           "end"),
-        Domain(Token::ARRAY,         "array"),
-        Domain(Token::STRING,        "string"),
+        Domain(Token::BEGIN,         "начало"),
+        Domain(Token::END,           "окончание"),
+        Domain(Token::ARRAY,         "массив"),
+        Domain(Token::STRING,        "строка"),
         Domain(Token::LINE_BREAK,    "\n"),
         Domain(Token::NUMBER,        "([0-9A-F]|\\.)+", true),
         Domain(Token::VARIABLE,      "[a-z]\\d{1,3}", true),

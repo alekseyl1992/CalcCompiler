@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
+#include <algorithm>
 #include "Parser.h"
 #include "Lexer.h"
 #include "ParserException.h"
@@ -185,6 +186,8 @@ Node *Parser::expression() {
                 break;
             }
         case Token::VARIABLE:
+            if (std::find(varList.begin(), varList.end(), token.value) == varList.end())
+                throw std::string("Неизвестная переменная: " + token.value);
         case Token::NUMBER: {
             lastTokenWasOperation = false;
 

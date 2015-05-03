@@ -22,7 +22,7 @@ Token Lexer::getNextToken() {
         std::cout << "Token: {" << it->type << ", " << value << "}" << std::endl;
         return {it->type, value};
     } else
-        throw("Unknown token: " + value);
+        throw("Неизвестный токен: " + value);
 }
 
 bool Lexer::tryAppend(std::string &value, char ch) {
