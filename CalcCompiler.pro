@@ -4,21 +4,18 @@
 #
 #-------------------------------------------------
 
-QT       -= gui
-QMAKE_CXXFLAGS += -std=c++14
+QT       += core gui widgets
 
 TARGET = CalcCompiler
-CONFIG   += console
-CONFIG   -= app_bundle
-
 TEMPLATE = app
-
+QMAKE_CXXFLAGS += -std=c++14
 
 SOURCES += main.cpp \
     Lexer.cpp \
     Parser.cpp \
     Compiler.cpp \
-    VM.cpp
+    VM.cpp \
+    MainWindow.cpp
 
 HEADERS += \
     Lexer.h \
@@ -29,4 +26,8 @@ HEADERS += \
     Token.h \
     Node.h \
     ParserException.h \
-    util.h
+    util.h \
+    MainWindow.h
+
+FORMS += \
+    MainWindow.ui
