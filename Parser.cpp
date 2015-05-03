@@ -43,11 +43,9 @@ Node *Parser::begin()
 std::vector<Node *> Parser::declarations()
 {
     std::vector<Node *> declarations;
-    Node *node = declaration();
-    do {
+    for (Node *node = declaration(); node; node = declaration()) {
         declarations.push_back(node);
-        node = declaration();
-    } while (node);
+    }
 
     return declarations;
 }
@@ -63,11 +61,12 @@ Node *Parser::declaration()
         node->token = typeToken;
         break;
     case Token::LABEL:
+    case Token::END:
         // too far
         stepBack = true;
         return nullptr;
     default:
-        throw ParserException(typeToken, {Token::ARRAY, Token::STRING, Token::LABEL});
+        throw ParserException(typeToken, {Token::ARRAY, Token::STRING, Token::LABEL, Token::END});
     }
 
     while (true) {
@@ -88,11 +87,9 @@ Node *Parser::declaration()
 std::vector<Node *> Parser::operations()
 {
     std::vector<Node *> operations;
-    Node *node = operation();
-    do {
+    for (Node *node = operation(); node; node = operation()) {
         operations.push_back(node);
-        node = operation();
-    } while (node);
+    }
 
     return operations;
 }
