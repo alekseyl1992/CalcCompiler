@@ -1,4 +1,5 @@
 #include <iostream>
+#include <QtWidgets/QPushButton>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 
@@ -12,46 +13,48 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    QObject::connect(ui->compileButton,
+            &QPushButton::clicked,
+            this,
+            &MainWindow::onCompileClick);
+
+    varsModel = new QStandardItemModel(this);
+    ui->varsTableView->setModel(varsModel);
+
+    ui->statusbar->showMessage("Готово");
 }
 
 void MainWindow::onCompileClick() {
     std::stringstream code;
-    code << R"(
-            begin
-            array a1 a2 a3
-            string s1
-            10: a1 = 10 + 2*5
-            20: a2 = a1 + 10
-            30: a3 = a2 + 0.1
-            40: a4 = 1 || 0
-            50: a5 = 1 && 0
-            60: a6 = -1A
-            70: a7 = -a6
-            end
-            )";
-
+    code << ui->codeEdit->document()->toPlainText().toStdString();
 
     try {
-        std::cout << "Compiling..." << std::endl;
+        ui->statusbar->showMessage("Компиляция...");
         Compiler compiler;
         Program program = compiler.compile(code);
-        std::cout << "Compiled" << std::endl << std::endl;
+        ui->statusbar->showMessage("Компиляция завершена");
 
 
-        std::cout << "Executing..." << std::endl;
+        ui->statusbar->showMessage("Выполнение...");
         VM vm;
         auto vars = vm.execute(program);
 
+        varsModel->clear();
+        varsModel->setHorizontalHeaderLabels({"Переменная", "Значение"});
         for (auto &var: vars) {
-            std::cout << var.first << " = " << to_hex_str(var.second) << std::endl;
-        }
+            QStandardItem *varNameItem = new QStandardItem(var.first.c_str());
+            QStandardItem *varValueItem = new QStandardItem(to_hex_str(var.second).c_str());
 
-        std::cout << "Executed" << std::endl;
+            varsModel->appendRow({varNameItem, varValueItem});
+        }
+        ui->varsTableView->repaint();
+
+        ui->statusbar->showMessage("Выполнение завершёно успешно");
 
     } catch (ParserException &e) {
-        std::cerr << e.what() << std::endl;
+        ui->statusbar->showMessage(QString("Синтаксическая ошибка: ") + e.what());
     } catch (std::string &e) {
-        std::cerr << e << std::endl;
+        ui->statusbar->showMessage(QString("Синтаксическая ошибка: ") + e.c_str());
     }
 }
 
