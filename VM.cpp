@@ -5,7 +5,7 @@ VM::VM() {
 
 }
 
-std::map<std::string, double> VM::execute(Program &program) {
+std::map<std::wstring, double> VM::execute(Program &program) {
     auto operations = program.operations;
     for (auto &operation: operations) {
         ExpNode *root = findExpRoot(operation);
@@ -73,7 +73,7 @@ double VM::evaluate(ExpNode *node) {
         else
             return node->value;
     } else if (node->token.type == Token::NUMBER) {
-        node->value = std::stod(std::string("0x") + node->token.value);
+        node->value = std::stod(std::wstring(L"0x") + node->token.value);
         if (node->isNegative)
             node->value = -node->value;
 

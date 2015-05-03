@@ -25,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent) :
 }
 
 void MainWindow::onCompileClick() {
-    std::stringstream codeStream;
-    std::string code = ui->codeEdit->document()->toPlainText().toUtf8().toStdString();
+    std::wstringstream codeStream;
+    std::wstring code = ui->codeEdit->document()->toPlainText().toStdWString();
     codeStream << code;
 
     try {
@@ -43,8 +43,11 @@ void MainWindow::onCompileClick() {
         varsModel->clear();
         varsModel->setHorizontalHeaderLabels({"Переменная", "Значение"});
         for (auto &var: vars) {
-            QStandardItem *varNameItem = new QStandardItem(var.first.c_str());
-            QStandardItem *varValueItem = new QStandardItem(to_hex_str(var.second).c_str());
+            QStandardItem *varNameItem = new QStandardItem(
+                        QString::fromStdWString(var.first));
+
+            QStandardItem *varValueItem = new QStandardItem(
+                        QString::fromStdString(to_hex_str(var.second)));
 
             varsModel->appendRow({varNameItem, varValueItem});
         }
@@ -53,9 +56,14 @@ void MainWindow::onCompileClick() {
         ui->statusbar->showMessage("Выполнение завершёно успешно");
 
     } catch (ParserException &e) {
-        ui->statusbar->showMessage(QString("Синтаксическая ошибка: ") + e.what());
-    } catch (std::string &e) {
-        ui->statusbar->showMessage(QString("Синтаксическая ошибка: ") + e.c_str());
+        ui->statusbar->showMessage(
+                    QString("Синтаксическая ошибка: ")
+                    + QString::fromStdWString(e.what()));
+
+    } catch (std::wstring &e) {
+        ui->statusbar->showMessage(
+                    QString("Синтаксическая ошибка: ")
+                    + QString::fromStdWString(e));
     }
 }
 

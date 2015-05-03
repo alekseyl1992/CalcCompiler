@@ -9,7 +9,7 @@
 class Parser
 {
 public:
-    Parser(std::stringstream& str);
+    Parser(std::wstringstream& str);
 
     Program parse();
 
@@ -34,7 +34,7 @@ private:
     bool stepBack = false;
 
     Lexer lexer;
-    std::vector<std::string> varList;
+    std::vector<std::wstring> varList;
 };
 
 #endif // PARSER_H

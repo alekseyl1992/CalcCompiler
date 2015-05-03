@@ -10,7 +10,7 @@ class Compiler
 public:
     Compiler();
 
-    Program compile(std::stringstream &code);
+    Program compile(std::wstringstream &code);
 
 private:
 };

@@ -3,24 +3,24 @@
 #include <exception>
 #include "Token.h"
 
-class ParserException : public std::exception
+class ParserException
 {
 public:
     ParserException(const Token &got, const std::initializer_list<Token::Type> &expected)
         : got(got), expected(expected)
     {
-        std::stringstream ss;
-        ss << "Получен токен "
+        std::wstringstream ss;
+        ss << L"Получен токен "
             << got.getTypeString()
-            << ": "
+            << L": "
             << got.value
-            << ", "
-            << "ожидались: {";
+            << L", "
+            << L"ожидались: {";
 
         for (auto exp: expected)
-            ss << Token::getTypeString(exp) << ", ";
+            ss << Token::getTypeString(exp) << L", ";
 
-        ss << "}";
+        ss << L"}";
 
         str = ss.str();
     }
@@ -29,7 +29,7 @@ public:
     ParserException(ParserException &&e) = default;
 
     // exception interface
-    virtual const char *what() const noexcept override
+    virtual const wchar_t *what() const
     {
         return str.c_str();
     }
@@ -37,7 +37,7 @@ public:
 private:
     const Token &got;
     const std::initializer_list<Token::Type> &expected;
-    std::string str;
+    std::wstring str;
 };
 
 #endif // PARSEREXCEPTION

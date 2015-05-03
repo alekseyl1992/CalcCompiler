@@ -3,7 +3,7 @@
 #include <string>
 
 struct Token {
-    enum Type { BEGIN, END, LINE_BREAK,
+    enum Type { UNKNOWN, BEGIN, END, LINE_BREAK,
                 ARRAY, STRING,
                 NUMBER, VARIABLE,
                 ASSIGN, LABEL,
@@ -11,26 +11,26 @@ struct Token {
                 AND, OR,
                 LBRACE, RBRACE, TOKEN_TYPES_COUNT };
 
-    const char *getTypeString() const {
+    const wchar_t *getTypeString() const {
         return getTypeString(type);
     }
 
-    static const char *getTypeString(Type type) {
-        static const char *strings[] = {
-                "BEGIN", "END", "LINE_BREAK",
-                "ARRAY", "STRING",
-                "NUMBER", "VARIABLE",
-                "ASSIGN", "LABEL",
-		"PLUS", "MINUS", "MULTIPLY", "DIVIDE", "POWER"
-                "AND", "OR",
-                "LBRACE", "RBRACE"
+    static const wchar_t *getTypeString(Type type) {
+	static const wchar_t *strings[] = {
+		L"UNKNOWN", L"BEGIN", L"END", L"LINE_BREAK",
+		L"ARRAY", L"STRING",
+		L"NUMBER", L"VARIABLE",
+		L"ASSIGN", L"LABEL",
+		L"PLUS", L"MINUS", L"MULTIPLY", L"DIVIDE", L"POWER"
+		L"AND", L"OR",
+		L"LBRACE", L"RBRACE"
         };
 
         return strings[type];
     }
 
     Type type;
-    std::string value;
+    std::wstring value;
 };
 
 #endif // TOKEN_H

@@ -6,7 +6,7 @@
 #include "Lexer.h"
 #include "ParserException.h"
 
-Parser::Parser(std::stringstream& str)
+Parser::Parser(std::wstringstream& str)
     : lexer(str)
 {
 
@@ -71,7 +71,7 @@ Node *Parser::declaration()
     }
 
     while (true) {
-        Token operandToken = lexer.getNextToken();
+        Token operandToken = getNextToken();
 
         switch (operandToken.type) {
         case Token::VARIABLE:
@@ -138,8 +138,7 @@ Node *Parser::expression() {
     bool isNegative = false; //for unary -
     bool lastTokenWasOperation = true;
 
-    ExpNode *tree = new ExpNode(); //root node
-    tree->parent = nullptr;
+    ExpNode *tree = nullptr;
 
     while (!stepBack) {
         Token token = getNextToken();
@@ -167,7 +166,7 @@ Node *Parser::expression() {
                 ExpNode *node = new ExpNode();
 
                 while (tree->parent != nullptr
-                       && getPriority(token.type) + priorityModifier < tree->parent->priority) {
+                       && getPriority(token.type) + priorityModifier <= tree->parent->priority) {
                     tree = tree->parent;
                 }
 
@@ -187,7 +186,7 @@ Node *Parser::expression() {
             }
         case Token::VARIABLE:
             if (std::find(varList.begin(), varList.end(), token.value) == varList.end())
-                throw std::string("Неизвестная переменная: " + token.value);
+                throw std::wstring(L"Неизвестная переменная: ") + token.value;
         case Token::NUMBER: {
             lastTokenWasOperation = false;
 
@@ -217,7 +216,7 @@ Node *Parser::expression() {
     while (tree->parent != nullptr)
         tree = tree->parent;
 
-    return tree->right();
+    return tree;
 }
 
 int Parser::getPriority(Token::Type operation) {

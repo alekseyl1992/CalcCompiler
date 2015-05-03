@@ -3,40 +3,42 @@
 #include <sstream>
 #include <vector>
 #include <string>
-#include <regex>
+#include <QRegExp>
 #include <QString>
+#include <locale>
 #include "Token.h"
 
 class Lexer
 {
 public:
-    Lexer(std::stringstream &str);
+    Lexer(std::wstringstream &str);
 
     Token getNextToken();
 
 private:
-    bool tryAppend(std::string &value, char ch);
+    bool tryAppend(std::wstring &value, wchar_t ch);
 
-    std::stringstream &str;
+    std::wstringstream &str;
 
     struct Domain {
         Token::Type type;
 
-        std::regex regex;
-        std::string exact;
+        QRegExp regex;
+        std::wstring exact;
         bool isRegex;
 
-        Domain(Token::Type type, std::string value, bool isRegex=false)
+        Domain(Token::Type type, std::wstring value, bool isRegex=false)
             : type(type), isRegex(isRegex) {
             if (isRegex)
-                regex = std::regex(value);
+                regex = QRegExp(QString::fromStdWString(value));
             else
                 exact = value;
         }
 
-        bool match(std::string str, bool full=false) {
-            if (isRegex)
-                return std::regex_match(str, regex);
+        bool match(std::wstring str, bool full=false) {
+            if (isRegex) {
+                return regex.exactMatch(QString::fromStdWString(str));
+            }
             else if (full)
                 return exact == str;
             else
@@ -45,23 +47,23 @@ private:
     };
 
     std::vector<Domain> domains = {
-        Domain(Token::BEGIN,         "начало"),
-        Domain(Token::END,           "окончание"),
-        Domain(Token::ARRAY,         "массив"),
-        Domain(Token::STRING,        "строка"),
-        Domain(Token::LINE_BREAK,    "\n"),
-        Domain(Token::NUMBER,        "([0-9A-F]|\\.)+", true),
-        Domain(Token::VARIABLE,      "[a-z]\\d{1,3}", true),
-        Domain(Token::ASSIGN,        "="),
-        Domain(Token::LABEL,         "(\\d)+\\:", true),
-        Domain(Token::PLUS,          "+"),
-        Domain(Token::MINUS,         "-"),
-        Domain(Token::MULTIPLY,      "*"),
-        Domain(Token::DIVIDE,        "/"),
-        Domain(Token::AND,           "&"),
-        Domain(Token::OR,            "|"),
-        Domain(Token::LBRACE,        "("),
-        Domain(Token::RBRACE,        ")")
+        Domain(Token::BEGIN,         L"начало"),
+        Domain(Token::END,           L"окончание"),
+        Domain(Token::ARRAY,         L"массив"),
+        Domain(Token::STRING,        L"строка"),
+        Domain(Token::LINE_BREAK,    L"\n"),
+        Domain(Token::NUMBER,        L"([0-9A-F]|\\.)+", true),
+        Domain(Token::VARIABLE,      L"[а-я]\\d{0,3}", true),
+        Domain(Token::ASSIGN,        L"="),
+        Domain(Token::LABEL,         L"(\\d)+\\:", true),
+        Domain(Token::PLUS,          L"+"),
+        Domain(Token::MINUS,         L"-"),
+        Domain(Token::MULTIPLY,      L"*"),
+        Domain(Token::DIVIDE,        L"/"),
+        Domain(Token::AND,           L"&"),
+        Domain(Token::OR,            L"|"),
+        Domain(Token::LBRACE,        L"("),
+        Domain(Token::RBRACE,        L")")
     };
 };
 

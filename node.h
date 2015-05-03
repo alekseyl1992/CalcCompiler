@@ -9,7 +9,7 @@ struct Node {
         NONE, OPERATION, OPERAND
     };
 
-    Token token = {Token::TOKEN_TYPES_COUNT, ""};
+    Token token = {Token::TOKEN_TYPES_COUNT, L""};
     std::vector<Node *> operands;
     Type type = NONE;
 

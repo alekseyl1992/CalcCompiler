@@ -9,7 +9,7 @@ struct Program
     std::vector<Node*> declarations;
     std::vector<Node*> operations;
     Node *end;
-    std::vector<std::string> varList;
+    std::vector<std::wstring> varList;
 };
 
 #endif // PROGRAM_H

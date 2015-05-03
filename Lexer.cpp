@@ -2,13 +2,13 @@
 #include <algorithm>
 #include <iostream>
 
-Lexer::Lexer(std::stringstream &str)
+Lexer::Lexer(std::wstringstream &str)
     : str(str) {
 
 }
 
 Token Lexer::getNextToken() {
-    std::string value;
+    std::wstring value;
 
     while (tryAppend(value, str.get())) { }
 
@@ -19,13 +19,14 @@ Token Lexer::getNextToken() {
 
     if (it != domains.end()) {
         str.unget();
-        std::cout << "Token: {" << it->type << ", " << value << "}" << std::endl;
+        std::wcout << L"Token: {" << it->type << L", " << value << L"}" << std::endl;
         return {it->type, value};
-    } else
-        throw("Неизвестный токен: " + value);
+    } else {
+        return {Token::UNKNOWN, value};
+    }
 }
 
-bool Lexer::tryAppend(std::string &value, char ch) {
+bool Lexer::tryAppend(std::wstring &value, wchar_t ch) {
     if (ch == ' ') {
         if (value.empty())
             return true;  //skip space before token

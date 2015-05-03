@@ -7,7 +7,7 @@ Compiler::Compiler()
 
 }
 
-Program Compiler::compile(std::stringstream &code)
+Program Compiler::compile(std::wstringstream &code)
 {
     Parser parser(code);
     return parser.parse();
