@@ -56,6 +56,9 @@ void VM::calculate(ExpNode *node) {
 }
 
 double VM::evaluate(ExpNode *node) {
+    if (node == nullptr)
+        throw std::wstring(L"Пустой узел");
+
     if (node->token.type == Token::VARIABLE) {
         auto var = vars.find(node->token.value);
         if (var != vars.end()) {
