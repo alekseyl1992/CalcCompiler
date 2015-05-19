@@ -52,6 +52,7 @@ void MainWindow::onCompileClick() {
             varsModel->appendRow({varNameItem, varValueItem});
         }
         ui->varsTableView->repaint();
+        ui->varsTableView->resizeColumnsToContents();
 
         ui->statusbar->showMessage("Выполнение завершёно успешно");
 
