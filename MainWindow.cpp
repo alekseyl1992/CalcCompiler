@@ -61,6 +61,19 @@ void MainWindow::onCompileClick() {
                     QString("Синтаксическая ошибка: ")
                     + QString::fromStdWString(e.what()));
 
+        // select error-token
+        const Token &token = e.getToken();
+        auto endPos = token.pos;
+        auto startPos = endPos - token.value.size();
+        if (token.pos == endPos)
+            startPos -= 1;
+
+        QTextCursor c = ui->codeEdit->textCursor();
+        c.setPosition(startPos);
+        c.setPosition(endPos, QTextCursor::KeepAnchor);
+        ui->codeEdit->setTextCursor(c);
+        ui->codeEdit->setFocus();
+
     } catch (std::wstring &e) {
         ui->statusbar->showMessage(
                     QString("Синтаксическая ошибка: ")

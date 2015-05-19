@@ -20,9 +20,9 @@ Token Lexer::getNextToken() {
     if (it != domains.end()) {
         str.unget();
         std::wcout << L"Token: {" << it->type << L", " << value << L"}" << std::endl;
-        return {it->type, value};
+        return {it->type, value, str.tellg()};
     } else {
-        return {Token::UNKNOWN, value};
+        return {Token::UNKNOWN, value, str.tellg()};
     }
 }
 

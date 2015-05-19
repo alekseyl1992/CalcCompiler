@@ -6,7 +6,8 @@
 class ParserException
 {
 public:
-    ParserException(const Token &got, const std::initializer_list<Token::Type> &expected)
+    ParserException(const Token &got,
+                    const std::initializer_list<Token::Type> &expected)
         : got(got), expected(expected)
     {
         std::wstringstream ss;
@@ -34,8 +35,12 @@ public:
         return str.c_str();
     }
 
+    const Token &getToken() {
+        return got;
+    }
+
 private:
-    const Token &got;
+    Token got;
     const std::initializer_list<Token::Type> &expected;
     std::wstring str;
 };

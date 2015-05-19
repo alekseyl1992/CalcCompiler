@@ -7,8 +7,7 @@
 #include "ParserException.h"
 
 Parser::Parser(std::wstringstream& str)
-    : lexer(str)
-{
+    : lexer(str) {
 
 }
 
@@ -22,8 +21,7 @@ Program Parser::parse() {
     };
 }
 
-Token Parser::skipEmptyLines()
-{
+Token Parser::skipEmptyLines() {
     Token token;
     while ((token = getNextToken()).type == Token::LINE_BREAK)
     { }
@@ -31,8 +29,7 @@ Token Parser::skipEmptyLines()
     return token;
 }
 
-Node *Parser::begin()
-{
+Node *Parser::begin() {
     Token token = skipEmptyLines();
     if (token.type != Token::Type::BEGIN)
         throw ParserException(token, {Token::BEGIN});
@@ -40,8 +37,7 @@ Node *Parser::begin()
     return new Node{token};
 }
 
-std::vector<Node *> Parser::declarations()
-{
+std::vector<Node *> Parser::declarations() {
     std::vector<Node *> declarations;
     for (Node *node = declaration(); node; node = declaration()) {
         declarations.push_back(node);
@@ -50,8 +46,7 @@ std::vector<Node *> Parser::declarations()
     return declarations;
 }
 
-Node *Parser::declaration()
-{
+Node *Parser::declaration() {
     Node *node = new Node();
 
     Token typeToken = skipEmptyLines();
@@ -84,8 +79,7 @@ Node *Parser::declaration()
     }
 }
 
-std::vector<Node *> Parser::operations()
-{
+std::vector<Node *> Parser::operations() {
     std::vector<Node *> operations;
     for (Node *node = operation(); node; node = operation()) {
         operations.push_back(node);
@@ -94,8 +88,7 @@ std::vector<Node *> Parser::operations()
     return operations;
 }
 
-Node *Parser::operation()
-{
+Node *Parser::operation() {
     Token labelToken = skipEmptyLines();
     switch (labelToken.type) {
     case Token::LABEL:
@@ -235,8 +228,7 @@ int Parser::getPriority(Token::Type operation) {
     }
 }
 
-Node *Parser::end()
-{
+Node *Parser::end() {
     stepBack = true;
     Token token = skipEmptyLines();
     if (token.type != Token::Type::END)
@@ -245,8 +237,7 @@ Node *Parser::end()
     return new Node{token};
 }
 
-Token Parser::getNextToken()
-{
+Token Parser::getNextToken() {
     if (stepBack) {
         stepBack = false;
         return prevToken;
