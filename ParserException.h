@@ -11,17 +11,30 @@ public:
         : got(got), expected(expected)
     {
         std::wstringstream ss;
-        ss << L"Получен токен "
+        ss << L"Получен токен '"
+            << got.value
+            << L"', "
+            << L"ожидались: ";
+
+        if (expected.size()) {
+            ss << Token::getTypeString(*expected.begin());
+
+            for (auto it = expected.begin() + 1; it != expected.end(); ++it)
+                ss << L", " << Token::getTypeString(*it);
+        }
+
+        str = ss.str();
+    }
+
+    ParserException(std::wstring message,
+                    const Token &got)
+        : got(got), expected({})
+    {
+        std::wstringstream ss;
+        ss << message
             << got.getTypeString()
             << L": "
-            << got.value
-            << L", "
-            << L"ожидались: {";
-
-        for (auto exp: expected)
-            ss << Token::getTypeString(exp) << L", ";
-
-        ss << L"}";
+            << got.value;
 
         str = ss.str();
     }
@@ -41,7 +54,7 @@ public:
 
 private:
     Token got;
-    const std::initializer_list<Token::Type> &expected;
+    std::initializer_list<Token::Type> expected;
     std::wstring str;
 };
 

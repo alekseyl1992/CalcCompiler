@@ -2,6 +2,7 @@
 #include <chrono>
 #include <thread>
 #include <algorithm>
+#include <initializer_list>
 #include "Parser.h"
 #include "Lexer.h"
 #include "ParserException.h"
@@ -31,8 +32,7 @@ Token Parser::skipEmptyLines() {
 
 Node *Parser::begin() {
     Token token = skipEmptyLines();
-    if (token.type != Token::Type::BEGIN)
-        throw ParserException(token, {Token::BEGIN});
+    check(token, {Token::BEGIN});
 
     return new Node{token};
 }
@@ -108,19 +108,19 @@ Node *Parser::operation() {
 
 Node *Parser::variable() {
     Token variableToken = getNextToken();
-    switch (variableToken.type) {
-    case Token::VARIABLE:
-        varList.push_back(variableToken.value);
-        break;
-    default:
-        throw ParserException(variableToken, {Token::VARIABLE});
-    }
+    check(variableToken, {Token::VARIABLE});
+    varList.push_back(variableToken.value);
 
     Token assignToken = getNextToken();
-    if (assignToken.type != Token::Type::ASSIGN)
-        throw ParserException(assignToken, {Token::ASSIGN});
+    check(assignToken, {Token::ASSIGN});
 
     return new Node{variableToken, {expression()}};
+}
+
+void Parser::check(Token token, std::initializer_list<Token::Type> types) {
+    auto it = std::find(types.begin(), types.end(), token.type);
+    if (it == types.end())
+        throw ParserException(token, types);
 }
 
 Node *Parser::expression() {
@@ -134,50 +134,67 @@ Node *Parser::expression() {
         Token token = getNextToken();
 
         switch (token.type) {
-            case Token::LBRACE:
-                priorityModifier += 10;
-                break;
-            case Token::RBRACE:
-                priorityModifier -= 10;
-                break;
-            case Token::PLUS:
-            case Token::MINUS:
-            case Token::MULTIPLY:
-            case Token::DIVIDE:
-            case Token::POWER:
-            case Token::AND:
-            case Token::OR: {
-                if (lastTokenWasOperation) { //it's unary -
-                    isNegative = true;
-                    break;
-                }
-                lastTokenWasOperation = true;
+        case Token::LBRACE:
+            check(prevToken, {
+                      Token::PLUS, Token::MINUS,
+                      Token::MULTIPLY, Token::DIVIDE, Token::POWER,
+                      Token::AND, Token::OR, Token::ASSIGN, Token::LBRACE });
 
-                ExpNode *node = new ExpNode();
+            priorityModifier += 10;
+            break;
+        case Token::RBRACE:
+            check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::RBRACE });
 
-                while (tree->parent != nullptr
-                       && getPriority(token.type) + priorityModifier <= tree->parent->priority) {
-                    tree = tree->parent;
-                }
+            priorityModifier -= 10;
+            break;
+        case Token::PLUS:
+        case Token::MINUS:
+        case Token::MULTIPLY:
+        case Token::DIVIDE:
+        case Token::POWER:
+        case Token::AND:
+        case Token::OR: {
+            if (token.type == Token::MINUS) //unary -
+                check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::RBRACE, Token::ASSIGN });
+            else
+                check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::RBRACE });
 
-                node->left(tree);
-                if (tree->parent != nullptr)
-                    tree->parent->right(node);
-
-                node->parent = tree->parent;
-                tree->parent = node;
-
-                tree = node;
-
-                tree->token = token;
-                tree->priority = getPriority(token.type) + priorityModifier;
-                tree->type = Node::Type::OPERATION;
+            if (lastTokenWasOperation) { //it's unary -
+                isNegative = true;
                 break;
             }
+            lastTokenWasOperation = true;
+
+            ExpNode *node = new ExpNode();
+
+            while (tree->parent != nullptr
+                   && getPriority(token.type) + priorityModifier <= tree->parent->priority) {
+                tree = tree->parent;
+            }
+
+            node->left(tree);
+            if (tree->parent != nullptr)
+                tree->parent->right(node);
+
+            node->parent = tree->parent;
+            tree->parent = node;
+
+            tree = node;
+
+            tree->token = token;
+            tree->priority = getPriority(token.type) + priorityModifier;
+            tree->type = Node::Type::OPERATION;
+            break;
+        }
         case Token::VARIABLE:
             if (std::find(varList.begin(), varList.end(), token.value) == varList.end())
-                throw std::wstring(L"Неизвестная переменная: ") + token.value;
+                throw ParserException(L"Неизвестная переменная: ", token);
         case Token::NUMBER: {
+            check(prevToken, {
+                      Token::PLUS, Token::MINUS,
+                      Token::MULTIPLY, Token::DIVIDE, Token::POWER,
+                      Token::AND, Token::OR, Token::ASSIGN, Token::LBRACE });
+
             lastTokenWasOperation = false;
 
             ExpNode *node = new ExpNode();
@@ -198,6 +215,12 @@ Node *Parser::expression() {
             break;
         }
         default:
+            if (!tree)
+                throw ParserException(token, {Token::NUMBER, Token::VARIABLE});
+
+            if (tree->type == Node::OPERATION)
+                throw ParserException(token, {Token::NUMBER, Token::VARIABLE});
+
             stepBack = true;
             break;
         }
@@ -240,9 +263,10 @@ Node *Parser::end() {
 Token Parser::getNextToken() {
     if (stepBack) {
         stepBack = false;
-        return prevToken;
+        return curToken;
     } else {
-        prevToken = lexer.getNextToken();
-        return prevToken;
+        prevToken = curToken;
+        curToken = lexer.getNextToken();
+        return curToken;
     }
 }

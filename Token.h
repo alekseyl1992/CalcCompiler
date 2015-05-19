@@ -17,13 +17,13 @@ struct Token {
 
     static const wchar_t *getTypeString(Type type) {
         static const wchar_t *strings[] = {
-            L"UNKNOWN", L"BEGIN", L"END", L"LINE_BREAK",
-            L"ARRAY", L"STRING",
-            L"NUMBER", L"VARIABLE",
-            L"ASSIGN", L"LABEL",
-            L"PLUS", L"MINUS", L"MULTIPLY", L"DIVIDE", L"POWER"
-            L"AND", L"OR",
-            L"LBRACE", L"RBRACE"
+            L"", L"начало", L"окончание", L"перенос строки",
+            L"массив", L"строка",
+            L"число", L"переменная",
+            L"=", L"метка",
+            L"+", L"-", L"*", L"/", L"^",
+            L"&", L"|",
+            L"(", L")"
         };
 
         return strings[type];

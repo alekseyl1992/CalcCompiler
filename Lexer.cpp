@@ -22,6 +22,10 @@ Token Lexer::getNextToken() {
         std::wcout << L"Token: {" << it->type << L", " << value << L"}" << std::endl;
         return {it->type, value, str.tellg()};
     } else {
+        str.unget();
+        if (value.empty())
+            value += str.get();
+
         return {Token::UNKNOWN, value, str.tellg()};
     }
 }

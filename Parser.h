@@ -30,7 +30,9 @@ private:
     Token getNextToken();
     int getPriority(Token::Type operation);
 
-    Token prevToken;
+    void check(Token token, std::initializer_list<Token::Type> types);
+
+    Token prevToken, curToken;
     bool stepBack = false;
 
     Lexer lexer;
