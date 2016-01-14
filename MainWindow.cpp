@@ -56,6 +56,23 @@ void MainWindow::onCompileClick() {
 
         ui->statusbar->showMessage("Выполнение завершёно успешно");
 
+    }  catch (ParserExprException &e) {
+        varsModel->clear();
+        ui->varsTableView->repaint();
+
+        ui->statusbar->showMessage(
+                    QString("Ошибка: ")
+                    + QString::fromStdWString(e.what()));
+
+        // select error-substring
+        auto endPos = e.getFrom();
+        auto startPos = e.getTo();
+
+        QTextCursor c = ui->codeEdit->textCursor();
+        c.setPosition(startPos);
+        c.setPosition(endPos, QTextCursor::KeepAnchor);
+        ui->codeEdit->setTextCursor(c);
+        ui->codeEdit->setFocus();
     } catch (ParserException &e) {
         varsModel->clear();
         ui->varsTableView->repaint();

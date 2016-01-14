@@ -130,6 +130,8 @@ Node *Parser::expression() {
 
     ExpNode *tree = nullptr;
 
+    Token firstToken = curToken;
+
     while (!stepBack) {
         Token token = getNextToken();
 
@@ -155,7 +157,7 @@ Node *Parser::expression() {
         case Token::AND:
         case Token::OR: {
             if (token.type == Token::MINUS) //unary -
-                check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::RBRACE, Token::ASSIGN });
+                check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::LBRACE, Token::RBRACE, Token::ASSIGN });
             else
                 check(prevToken, { Token::NUMBER, Token::VARIABLE, Token::RBRACE });
 
@@ -224,6 +226,11 @@ Node *Parser::expression() {
             stepBack = true;
             break;
         }
+    }
+
+    // brace ballance check
+    if (priorityModifier != 0) {
+        throw ParserExprException(L"Несбалансированы скобки. ", firstToken.pos, curToken.pos);
     }
 
     while (tree->parent != nullptr)

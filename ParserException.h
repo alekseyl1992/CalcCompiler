@@ -28,8 +28,7 @@ public:
 
     ParserException(std::wstring message,
                     const Token &got)
-        : got(got), expected({})
-    {
+        : got(got), expected({}) {
         std::wstringstream ss;
         ss << message
             << got.getTypeString()
@@ -39,8 +38,16 @@ public:
         str = ss.str();
     }
 
+    ParserException(std::wstring message) {
+        std::wstringstream ss;
+        ss << message;
+
+        str = ss.str();
+    }
+
     ParserException(const ParserException &e) = default;
     ParserException(ParserException &&e) = default;
+
 
     // exception interface
     virtual const wchar_t *what() const
@@ -56,6 +63,26 @@ private:
     Token got;
     std::initializer_list<Token::Type> expected;
     std::wstring str;
+};
+
+class ParserExprException : public ParserException {
+public:
+    ParserExprException(std::wstring message,
+                    int from, int to)
+        : ParserException(message), from(from), to(to) {
+
+    }
+
+    int getFrom() {
+        return from;
+    }
+
+    int getTo() {
+        return to;
+    }
+
+private:
+    int from = 0, to = 0;
 };
 
 #endif // PARSEREXCEPTION
